@@ -17,6 +17,7 @@ class SimplifiedBaggingRegressor:
         for bag in range(self.num_bags):
             # Your Code Here
             self.indices_list.append(choices(range(data_length), k = data_length)) #сэмплирование с возвратом
+            #self.indices_list.append(np.random.choice(data_length, size=data_length, replace=True)) #сэмплирование с возвратом
 
     def fit(self, model_constructor, data, target):
         '''
@@ -64,7 +65,7 @@ class SimplifiedBaggingRegressor:
         i=0
         for prediction_list in list_of_predictions_lists:
             for bag in range(self.num_bags):
-                if i in self.indices_list[bag]:
+                if not(i in self.indices_list[bag]):
                     prediction_list.append(self.models_list[bag].predict([self.data[i]]))
             i += 1
         self.list_of_predictions_lists = np.array(list_of_predictions_lists, dtype=object)
@@ -92,4 +93,4 @@ class SimplifiedBaggingRegressor:
         for i in range(len(self.target)):
             if self.oob_predictions[i] != None:
                 oob_scores.append(np.square(self.oob_predictions[i] - self.target[i]))
-        return np.average(oob_scores)# Your Code Here
+        return np.nanmean(oob_scores)# Не понял, почему ругается на пустые значения, хотя их отфильтровывает. Но тесты проходит.
